@@ -1,0 +1,116 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use std.textio.all;
+
+
+entity ghh is
+-- Port ( 
+ 
+ 
+
+end ghh;
+
+architecture Behavioral of ghh is
+signal clk :std_logic:='0';
+type sin1 is array (0 to 999) of real ;
+signal ss : sin1 :=(others=>0) ;
+type filt is array (0 to 10) of real;
+signal ff : filt :=(others=>0) ;
+signal start : std_logic :='0';
+
+begin
+process
+begin
+clk <= '1';
+wait for 300 us;
+clk <= '0';
+wait for 300 us;
+end process;
+process (clk)
+
+file oku1 : text open read_mode is "C:\Users\Batikan\Desktop\soru1\sinyals2.txt" ;
+file oku2 : text open read_mode is "C:\Users\Batikan\Desktop\soru1\agfkatsayilar.txt" ;
+file yaz : text open write_mode is "C:\Users\Batikan\Desktop\soru1\sinyeni.txt" ;
+variable s_oku1 : line;
+variable s_oku2 : line;
+variable s_yaz : line;
+variable s_yaz1 : line;
+variable s_yaz2 : line;
+variable data1 : real;
+variable dgr1 : real;
+variable data2 : real;
+variable dgr2 : real;
+variable cnt : real;
+
+
+
+begin
+
+if clk = '1' then
+
+if not endfile(oku1) then
+
+readline(oku1 , s_oku1);
+read (s_oku1, data1);
+ss(cnt)<=data1;
+end if;
+if not endfile(oku2) then
+readline(oku2 , s_oku2);
+read (s_oku2, data2);
+ff(cnt)<=data2;
+end if;
+cnt :=cnt+1;
+
+
+if endfile(oku1) then
+start <= '1';
+end if;
+end if ;
+
+
+
+end process;
+
+
+
+process (start)
+
+file yaz : text open write_mode is "C:\Users\Batikan\Desktop\sound\sinyeni.txt" ;
+variable s_oku1 : line;
+variable s_oku2 : line;
+variable s_yaz : line;
+variable x : real;
+variable cnt1 : real ;
+variable kmin : real ;
+variable kmax : real ;
+begin
+
+
+if start = '1' then
+
+for i in 0 to 1110 loop
+x:=0;
+        if i>=10 then
+           kmin := i - 10;
+        else
+           kmin:= 0;
+        end if;
+        if i<999 then
+           kmax:=i;
+        else
+           kmax:=1110;
+        end if;
+        for k in kmin to kmax loop   
+          x :=  x + ss(k) * ff(i-k+1)/1000000 ;
+ end loop;
+write(s_yaz,x);
+writeline (yaz, s_yaz);
+end loop;
+end if ;
+end process ;
+
+
+
+
+end Behavioral;

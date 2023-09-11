@@ -1,0 +1,35 @@
+clc;
+clear all;
+ 
+[y Fs]=audioread('C:\Users\Batikan\Desktop\sound\test.ogg');%bilgisayardaki ses dosyasını okudum
+%sound(y,Fs);%daha duyulabilir olması için sesi yükselttim
+
+
+%1 db gürültü ekledik
+x = awgn(y,1,'measured');
+plot([y x]);
+legend('Original Signal','Signal with AWGN')
+%sound(y); %ses çaldırmak için 
+
+%ses sinyali ve gürültülü sinyali grafiğe çizdirdim
+subplot(2,2,1);
+title('ses sinyali');
+plot(y);
+subplot(2,2,2);
+plot(x);
+title('ses ve gürültü birleşimi sinyali');
+writematrix(x,'C:\Users\Batikan\Desktop\sound\sinyal.txt')%oluşturulan x matrisini txt dosyasına yazdırdık.
+N=length(x);
+[F]=fft(x)/N;
+plot(abs(F));
+%Frekans spekturumları için bunu yazmadan kodu çalıştırırsak gürültülü
+%sinyali veriyor.Bununla açınca speekturumu çizdiriyor.
+ Freq_Spec=[F(1); 2*abs(F(2:round(N/2)+1))];
+ f=linspace(0,Fs,N); 
+ 
+ figure; 
+ stem(f(1:round(N/2)+1),Freq_Spec)
+% 
+figure; 
+Freq_Spec_Full=[F(1); 2*abs(F(2:end))];
+stem(f,Freq_Spec_Full);
